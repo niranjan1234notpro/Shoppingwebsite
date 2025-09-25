@@ -1,462 +1,316 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ShopHub — Single-file Demo Marketplace</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shinan Airlines - Convenient Online Flight Booking Services</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;400&display=swap" rel="stylesheet">
   <style>
-    /* ----------------- Basic reset & variables ----------------- */
-    :root{
-      --nav:#232f3e; --accent:#ff9900; --muted:#6b7280; --card-bg:#fff;
-      --glass: rgba(255,255,255,0.03);
-      --max-width:1200px;
+    :root {
+      --primary-bg: #f6faff;
+      --primary-color: #0453ce;
+      --secondary-bg: #e8f1fa;
+      --card-bg: #fff;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --border-radius: 22px;
+      --font-main: 'Montserrat', sans-serif;
+      --gray-text: #737c8b;
+      --dark: #181d35;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#111;background:#f4f6f8;}
-    a{color:inherit;text-decoration:none}
-    img{max-width:100%;display:block}
-    .container{max-width:var(--max-width);margin:0 auto;padding:16px}
-
-    /* ----------------- Header & nav ----------------- */
-    header{background:var(--nav);color:#fff;padding:12px 0;box-shadow:0 2px 6px rgba(0,0,0,.08)}
-    .topbar{display:flex;align-items:center;gap:12px;padding:0 16px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px}
-    .brand img{width:36px;height:36px;border-radius:6px;object-fit:cover}
-    .searchbar{flex:1;display:flex;gap:8px;align-items:center}
-    .searchbar input{flex:1;padding:10px;border-radius:8px;border:0;outline:none}
-    .icon-btn{background:transparent;border:0;color:#fff;cursor:pointer;padding:8px;border-radius:8px}
-    nav.toplinks{display:flex;gap:12px;margin-left:8px}
-    .badge{background:var(--accent);color:#fff;padding:2px 7px;border-radius:999px;font-weight:700;font-size:12px}
-
-    /* ----------------- Layout ----------------- */
-    main{padding:18px 0}
-    .layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
-    @media (max-width:900px){ .layout{grid-template-columns:1fr} .sidebar{order:2} .maincontent{order:1} .searchbar{display:none} }
-
-    /* ----------------- Sidebar ----------------- */
-    .sidebar{background:var(--card-bg);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(15,23,42,.06)}
-    .filter-group{margin-bottom:14px}
-    .filter-group h4{margin:0 0 8px 0;font-size:14px;color:var(--muted)}
-    .cat-list{display:flex;flex-direction:column;gap:6px}
-    .cat-item{padding:8px;border-radius:8px;cursor:pointer;color:#0f172a}
-    .cat-item:hover{background:#f7f7f8}
-
-    /* ----------------- Product grid & cards ----------------- */
-    .controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:12px}
-    .sort-select, .price-range{padding:8px;border-radius:8px;border:1px solid #e5e7eb}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
-    .card{background:var(--card-bg);border-radius:12px;padding:12px;box-shadow:0 6px 12px rgba(15,23,42,.04);display:flex;flex-direction:column;gap:10px}
-    .media{height:170px;border-radius:8px;overflow:hidden;background:#f0f2f5;display:flex;align-items:center;justify-content:center}
-    .media img{width:100%;height:100%;object-fit:cover}
-    .prod-title{font-weight:600;font-size:15px;min-height:42px}
-    .price-row{display:flex;justify-content:space-between;align-items:center;gap:8px}
-    .price{font-weight:700;color:#0b1220}
-    .old-price{text-decoration:line-through;color:var(--muted);font-size:13px}
-    .star{color:#f59e0b;font-weight:700}
-
-    /* ----------------- Buttons ----------------- */
-    .btn{background:var(--accent);color:#111;padding:8px 10px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
-    .btn.ghost{background:transparent;border:1px solid #e8e8e8;color:#111}
-    .small{padding:6px 8px;font-size:14px}
-
-    /* ----------------- Modal/Product detail ----------------- */
-    .drawer{position:fixed;right:0;top:0;bottom:0;width:420px;max-width:95%;background:#fff;box-shadow:-20px 0 50px rgba(2,6,23,.2);z-index:80;padding:18px;transform:translateX(115%);transition:transform .28s cubic-bezier(.2,.9,.2,1)}
-    .drawer.open{transform:translateX(0)}
-    .close-x{background:transparent;border:0;font-size:20px;cursor:pointer}
-    .thumbs{display:flex;gap:8px;margin-top:8px}
-    .thumbs img{width:64px;height:64px;border-radius:6px;object-fit:cover;cursor:pointer;border:2px solid transparent}
-    .thumbs img.active{border-color:var(--accent)}
-
-    /* ----------------- Cart/Checkout views ----------------- */
-    .cart-list{display:flex;flex-direction:column;gap:12px}
-    .cart-item{display:flex;gap:12px;padding:10px;border-radius:10px;background:#fff;align-items:center}
-    .qty{display:flex;gap:6px;align-items:center}
-    .total-row{display:flex;justify-content:space-between;align-items:center;padding:14px;background:#fff;border-radius:10px;font-weight:700}
-
-    /* ----------------- Footer & tiny styles ----------------- */
-    footer{margin-top:20px;padding:18px;text-align:center;color:var(--muted)}
-    .muted{color:var(--muted);font-size:13px}
-    .center{display:flex;align-items:center;justify-content:center;gap:8px}
-    .link{color:var(--nav);cursor:pointer}
-    .badge-wish{background:#fee2e2;color:#b91c1c;padding:4px 6px;border-radius:6px;font-weight:700;font-size:12px}
-    /* simple toast */
-    .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#111;color:#fff;padding:10px 16px;border-radius:8px;opacity:0;pointer-events:none;transition:all .25s}
-    .toast.show{opacity:1;pointer-events:auto;bottom:40px}
+    body {
+      margin: 0;
+      background: var(--primary-bg);
+      font-family: var(--font-main);
+      color: var(--dark);
+    }
+    .container {
+      max-width: 980px;
+      margin: 36px auto 0 auto;
+      background: #fff;
+      border-radius: 30px;
+      box-shadow: var(--shadow);
+      padding: 36px 32px 48px 32px;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #ecf0f8;
+    }
+    .navbar .brand {
+      font-weight: 700;
+      font-size: 1.5em;
+      color: var(--primary-color);
+      letter-spacing: 2px;
+    }
+    .navbar nav a {
+      color: var(--dark);
+      text-decoration: none;
+      margin: 0 16px;
+      font-weight: 500;
+    }
+    .navbar .nav-right button {
+      background: var(--primary-color);
+      border: none;
+      color: #fff;
+      padding: 10px 26px;
+      font-weight: 700;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+    .hero {
+      text-align: center;
+      margin-top: 26px;
+    }
+    .hero h1 {
+      font-size: 2.2em;
+      font-weight: 800;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    .hero p {
+      color: var(--gray-text);
+      margin-bottom: 34px;
+      font-size: 1.1em;
+    }
+    .airplane-img {
+      width: 380px;
+      margin-bottom: 24px;
+      filter: drop-shadow(0 4px 24px #a2cdfd44);
+    }
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--secondary-bg);
+      border-radius: var(--border-radius);
+      padding: 16px 8px;
+      margin: 0 auto 34px auto;
+      gap: 12px;
+      max-width: 720px;
+    }
+    .search-bar input, .search-bar select {
+      border: none;
+      background: #f4f7fa;
+      border-radius: 10px;
+      padding: 10px 15px;
+      font-size: 1em;
+      max-width: 160px;
+      outline: none;
+    }
+    .search-bar button {
+      background: var(--primary-color);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 36px;
+      font-weight: 700;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    section {
+      margin-top: 46px;
+    }
+    h2.section-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .card-list {
+      display: flex;
+      gap: 26px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 26px;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      width: 210px;
+      overflow: hidden;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-5px) scale(1.025);
+    }
+    .card img {
+      width: 100%;
+      display: block;
+      height: 120px;
+      object-fit: cover;
+    }
+    .card .card-content {
+      padding: 13px 18px 13px 18px;
+    }
+    .card .label {
+      background: var(--primary-color);
+      color: #fff;
+      font-size: 0.85em;
+      padding: 4px 8px;
+      border-radius: 8px;
+      margin-bottom: 7px;
+      display: inline-block;
+      font-weight: 500;
+    }
+    .card .card-title {
+      font-weight: 700;
+      font-size: 1em;
+      margin-bottom: 6px;
+      color: var(--dark);
+    }
+    .card .card-desc {
+      color: var(--gray-text);
+      font-size: 0.94em;
+      margin-bottom: 0;
+    }
+    .airlines-list {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+    }
+    .airline-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow);
+      padding: 18px 28px 16px 28px;
+      text-align: center;
+      width: 180px;
+      margin-bottom: 0;
+    }
+    .airline-card img {
+      height: 56px;
+      margin-bottom: 7px;
+    }
+    .airline-card .airline-name {
+      font-weight: 700;
+      font-size: 1em;
+      color: var(--primary-color);
+      margin-top: 8px;
+    }
+    @media (max-width: 850px) {
+      .card-list, .airlines-list {
+        flex-direction: column;
+        align-items: center;
+      }
+      .container {
+        padding: 20px 7px;
+      }
+      .search-bar {
+        flex-direction: column;
+        gap: 7px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header>
-    <div class="container topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="brand" onclick="route('home')" style="cursor:pointer">
-          <img src="https://images.pexels.com/photos/3757941/pexels-photo-3757941.jpeg" alt="logo">
-          ShopHub
-        </div>
-        <nav class="toplinks" aria-hidden="true">
-          <a class="link" onclick="route('home')">Home</a>
-          <a class="link" onclick="route('orders')">My Orders</a>
-          <a class="link" onclick="route('wishlist')">Wishlist</a>
-        </nav>
-      </div>
-
-      <div class="searchbar">
-        <input id="global-search" placeholder="Search for products, e.g. iPhone 14, denim jacket..." oninput="applyFilters()" />
-        <select id="global-category" class="sort-select" onchange="applyFilters()">
-          <option value="">All categories</option>
-        </select>
-        <button class="icon-btn" title="Search" onclick="applyFilters()">🔎</button>
-      </div>
-
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="icon-btn" id="user-btn" onclick="openAuth()"></button>
-          <div style="cursor:pointer" onclick="route('cart')">🛒 <span class="badge" id="cart-count">0</span></div>
-        </div>
+  <div class="container">
+    <div class="navbar">
+      <span class="brand">Shinan Airlines</span>
+      <nav>
+        <a href="#">Flights</a>
+        <a href="#">Hotels</a>
+        <a href="#">Deals</a>
+        <a href="#">Support</a>
+      </nav>
+      <div class="nav-right">
+        <button>Sign In</button>
       </div>
     </div>
-  </header>
-
-  <!-- APP BODY -->
-  <main class="container" id="app">
-    <!-- dynamic content injected here -->
-    <div id="view-root"></div>
-  </main>
-
-  <footer class="container">
-    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">
-      <div class="muted">© 2025 ShopHub — Demo marketplace. No real payments. Images are from public demo sources.</div>
-      <div class="muted">Built as a single-file HTML app • LocalStorage demo</div>
+    
+    <div class="hero">
+      <img src="https://cdn.pixabay.com/photo/2017/01/20/00/30/airplane-1990900_1280.png" alt="Airplane" class="airplane-img">
+      <p>READY. TAKE. OFF</p>
+      <h1>CONVENIENT ONLINE<br>FLIGHT BOOKING SERVICES</h1>
     </div>
-  </footer>
-
-  <!-- PRODUCT DETAIL DRAWER -->
-  <aside id="product-drawer" class="drawer" aria-hidden="true">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <strong id="drawer-title"></strong>
-      <button class="close-x" onclick="closeDrawer()">✕</button>
+    
+    <div class="search-bar">
+      <input type="text" placeholder="From (e.g. Tokyo, Japan)">
+      <input type="text" placeholder="To (e.g. Berlin, Germany)">
+      <input type="date">
+      <input type="date">
+      <button>Search</button>
     </div>
-    <div id="drawer-body" style="margin-top:12px"></div>
-  </aside>
-
-  <!-- TOAST -->
-  <div id="toast" class="toast">Item added</div>
-
-  <script>
-    /*******************************
-     * Demo Data (products + models)
-     *******************************/
-    const PRODUCTS = [
-      {
-        id: 'p_iphone14pro',
-        title: 'iPhone 14 Pro',
-        category: 'Mobiles',
-        price: 999,
-        oldPrice: 1199,
-        rating: 4.6,
-        images: [
-          'https://images.pexels.com/photos/607812/pexels-photo-607812.jpeg',
-          'https://images.pexels.com/photos/267394/pexels-photo-267394.jpeg',
-          'https://images.pexels.com/photos/341523/pexels-photo-341523.jpeg'
-        ],
-        modelImage: 'https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg',
-        desc: 'Apple iPhone 14 Pro — 6.1" display, A16 Bionic, triple camera. Demo data.'
-      },
-      {
-        id: 'p_dellxps',
-        title: 'Dell XPS 13 (2024)',
-        category: 'Laptops',
-        price: 1299,
-        oldPrice: 1499,
-        rating: 4.5,
-        images: [
-          'https://images.pexels.com/photos/18105/pexels-photo.jpg',
-          'https://images.pexels.com/photos/18105/pexels-photo-18105.jpeg'
-        ],
-        modelImage: 'https://images.pexels.com/photos/374074/pexels-photo-374074.jpeg',
-        desc: 'Dell XPS 13 — Intel i7, 16GB RAM. Sleek, premium. Demo data.'
-      },
-      {
-        id: 'p_nike_sneakers',
-        title: 'Nike Air Zoom Sneakers',
-        category: 'Fashion',
-        price: 120,
-        oldPrice: 150,
-        rating: 4.4,
-        images: [
-          'https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg',
-          'https://images.pexels.com/photos/2529150/pexels-photo-2529150.jpeg'
-        ],
-        modelImage: 'https://images.pexels.com/photos/2983461/pexels-photo-2983461.jpeg',
-        desc: 'Comfortable running shoes from Nike. Demo product.'
-      },
-      {
-        id: 'p_rolex_watch',
-        title: 'Classic Chrono Watch',
-        category: 'Accessories',
-        price: 5500,
-        oldPrice: 5999,
-        rating: 4.8,
-        images: [
-          'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg',
-          'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg'
-        ],
-        modelImage: 'https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg',
-        desc: 'Luxury chronograph watch. Demo product.'
-      },
-      {
-        id: 'p_sony_headphones',
-        title: 'Sony Noise Cancelling Headphones',
-        category: 'Electronics',
-        price: 350,
-        oldPrice: 399,
-        rating: 4.7,
-        images: [
-          'https://images.pexels.com/photos/653338/pexels-photo-653338.jpeg',
-          'https://images.pexels.com/photos/3747776/pexels-photo-3747776.jpeg'
-        ],
-        modelImage: 'https://images.pexels.com/photos/3747776/pexels-photo-3747776.jpeg',
-        desc: 'Wireless headphones with active noise cancellation. Demo product.'
-      },
-      {
-        id: 'p_sofa',
-        title: 'Modern Sofa 3-Seater',
-        category: 'Home',
-        price: 899,
-        oldPrice: 1100,
-        rating: 4.3,
-        images: [
-          'https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg',
-          'https://images.pexels.com/photos/386012/pexels-photo-386012.jpeg'
-        ],
-        modelImage: 'https://images.pexels.com/photos/276583/pexels-photo-276583.jpeg',
-        desc: 'Comfortable sofa for living room. Demo product.'
-      },
-      // add more demo products as needed
-    ];
-
-    /*******************************
-     * App State & Utilities
-     *******************************/
-    const state = {
-      products: PRODUCTS.slice(),
-      filtered: PRODUCTS.slice(),
-      cart: JSON.parse(localStorage.getItem('shop_cart') || '[]'),
-      wishlist: JSON.parse(localStorage.getItem('shop_wishlist') || '[]'),
-      user: JSON.parse(localStorage.getItem('shop_user') || 'null'), // {name,email}
-      orders: JSON.parse(localStorage.getItem('shop_orders') || '[]'),
-      activeProduct: null
-    };
-
-    function saveState(){
-      localStorage.setItem('shop_cart', JSON.stringify(state.cart));
-      localStorage.setItem('shop_wishlist', JSON.stringify(state.wishlist));
-      localStorage.setItem('shop_user', JSON.stringify(state.user));
-      localStorage.setItem('shop_orders', JSON.stringify(state.orders));
-      updateCartCount();
-      updateUserBtn();
-    }
-
-    function toast(msg = 'Done', time=1600){
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(()=> t.classList.remove('show'), time);
-    }
-
-    /*******************************
-     * Routing & initial render
-     *******************************/
-    function route(page, opts = {}) {
-      window.scrollTo(0,0);
-      const root = document.getElementById('view-root');
-      if (page === 'home') return renderHome(root);
-      if (page === 'cart') return renderCart(root);
-      if (page === 'checkout') return renderCheckout(root);
-      if (page === 'product') return renderProduct(root, opts.id);
-      if (page === 'login') return renderAuth(root, opts.mode || 'login');
-      if (page === 'orders') return renderOrders(root);
-      if (page === 'wishlist') return renderWishlist(root);
-      // default
-      return renderHome(root);
-    }
-
-    // initial
-    document.addEventListener('DOMContentLoaded', ()=>{
-      initCategories();
-      updateUserBtn();
-      updateCartCount();
-      route('home');
-      // quick demo: attach global Enter search
-      document.getElementById('global-search').addEventListener('keydown', (e)=>{
-        if(e.key === 'Enter') applyFilters();
-      });
-    });
-
-    /*******************************
-     * Header helper
-     *******************************/
-    function updateCartCount(){
-      const count = state.cart.reduce((s,i)=>s+i.qty,0);
-      document.getElementById('cart-count').innerText = count;
-    }
-    function updateUserBtn(){
-      const btn = document.getElementById('user-btn');
-      if(state.user){
-        btn.innerText = '👤 ' + (state.user.name || state.user.email.split('@')[0]);
-        btn.title = 'Open account menu';
-        btn.onclick = ()=> openAccountMenu();
-      } else {
-        btn.innerText = '🔐 Sign in';
-        btn.title = 'Sign in';
-        btn.onclick = ()=> route('login');
-      }
-    }
-
-    function openAuth(){
-      if(state.user) openAccountMenu();
-      else route('login');
-    }
-
-    function openAccountMenu(){
-      const menu = document.createElement('div');
-      menu.style.position='fixed';menu.style.right='18px';menu.style.top='66px';menu.style.background='#fff';
-      menu.style.padding='10px';menu.style.borderRadius='8px';menu.style.boxShadow='0 6px 20px rgba(2,6,23,.15)';
-      menu.innerHTML = `
-        <div style="min-width:180px">
-          <div style="font-weight:700">${state.user.name || state.user.email}</div>
-          <div style="margin-top:8px;display:flex;gap:6px">
-            <button class="btn small" onclick="route('orders'); this.parentElement.parentElement.remove();">My Orders</button>
-            <button class="btn ghost small" onclick="logout(); this.parentElement.parentElement.remove();">Logout</button>
+    
+    <section>
+      <h2 class="section-title">TOP FLIGHT DEALS</h2>
+      <div class="card-list">
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Luxury Travel">
+          <div class="card-content">
+            <span class="label">DISCOUNT</span>
+            <div class="card-title">LUXURY TRAVEL AND AIRLINES</div>
+            <div class="card-desc">Save on premium cabins and get exclusive access.</div>
           </div>
-        </div>`;
-      document.body.appendChild(menu);
-      const remove = ()=> menu.remove();
-      setTimeout(()=> document.addEventListener('click', remove, {once:true}), 30);
-    }
-
-    function logout(){
-      state.user=null;
-      saveState();
-      toast('Signed out');
-      route('home');
-    }
-
-    /*******************************
-     * Categories & Filters
-     *******************************/
-    function initCategories(){
-      const catSet = new Set(PRODUCTS.map(p=>p.category));
-      const select = document.getElementById('global-category');
-      catSet.forEach(c=>{
-        const opt = document.createElement('option');
-        opt.value = c; opt.textContent = c;
-        select.appendChild(opt);
-      });
-    }
-
-    function applyFilters(){
-      const q = (document.getElementById('global-search').value || '').toLowerCase().trim();
-      const cat = document.getElementById('global-category').value;
-      let items = PRODUCTS.slice();
-
-      if(cat) items = items.filter(it => it.category === cat);
-      if(q) items = items.filter(it => (it.title+ ' ' + it.desc + ' ' + it.category).toLowerCase().includes(q));
-      // sort by relevance (simple)
-      const sortSelect = document.querySelector('.sort-select')?.value || 'popular';
-      if(sortSelect === 'price-low') items.sort((a,b)=>a.price-b.price);
-      else if(sortSelect === 'price-high') items.sort((a,b)=>b.price-a.price);
-      else if(sortSelect === 'rating') items.sort((a,b)=>b.rating-a.rating);
-      state.filtered = items;
-      // if current view is grid, re-render
-      const root = document.getElementById('view-root');
-      if(root.dataset.view === 'home-grid') renderHome(root);
-    }
-
-    /*******************************
-     * Cart / Wishlist helpers
-     *******************************/
-    function addToCart(productId, qty=1){
-      const item = state.cart.find(i=>i.id===productId);
-      if(item) item.qty += qty;
-      else state.cart.push({id:productId, qty});
-      saveState();
-      toast('Added to cart');
-    }
-
-    function removeFromCart(productId){
-      state.cart = state.cart.filter(i=>i.id!==productId);
-      saveState();
-      renderCart(document.getElementById('view-root'));
-    }
-
-    function changeQty(productId, delta){
-      const item = state.cart.find(i=>i.id===productId);
-      if(!item) return;
-      item.qty += delta;
-      if(item.qty < 1) item.qty = 1;
-      saveState();
-      renderCart(document.getElementById('view-root'));
-    }
-
-    function toggleWishlist(productId){
-      const idx = state.wishlist.indexOf(productId);
-      if(idx === -1) state.wishlist.push(productId);
-      else state.wishlist.splice(idx,1);
-      saveState();
-      toast(idx===-1 ? 'Added to wishlist' : 'Removed from wishlist');
-      renderWishlist(document.getElementById('view-root'));
-    }
-
-    /*******************************
-     * Renders: Home (grid)
-     *******************************/
-    function renderHome(root){
-      root.dataset.view = 'home-grid';
-      root.innerHTML = `
-        <div class="layout">
-          <aside class="sidebar">
-            <div class="filter-group">
-              <h4>Categories</h4>
-              <div class="cat-list" id="left-cats"></div>
-            </div>
-            <div class="filter-group">
-              <h4>Price</h4>
-              <div style="display:flex;gap:8px">
-                <input id="min-price" class="price-range" placeholder="Min" type="number" oninput="filterByPrice()" />
-                <input id="max-price" class="price-range" placeholder="Max" type="number" oninput="filterByPrice()" />
-              </div>
-            </div>
-            <div class="filter-group">
-              <h4>Top picks</h4>
-              <div style="display:flex;flex-direction:column;gap:8px">
-                <button class="btn small" onclick="applyTop('popular')">Popular</button>
-                <button class="btn ghost small" onclick="applyTop('rating')">Top rated</button>
-              </div>
-            </div>
-          </aside>
-
-          <section class="maincontent">
-            <div class="controls">
-              <div><strong>Showing ${state.filtered.length}</strong> products</div>
-              <div style="display:flex;gap:8px;align-items:center">
-                <select class="sort-select" onchange="applyFilters()">
-                  <option value="popular">Sort: Popular</option>
-                  <option value="price-low">Price: Low → High</option>
-                  <option value="price-high">Price: High → Low</option>
-                  <option value="rating">Top rated</option>
-                </select>
-                <button class="btn ghost small" onclick="route('wishlist')">My Wishlist</button>
-              </div>
-            </div>
-
-            <div class="grid" id="product-grid"></div>
-          </section>
         </div>
-      `;
-      // categories left
-      const leftCats = document.getElementById('left-cats');
-      const cats = Array.from(new Set(PRODUCTS.map(p=>p.category)));
-      leftCats.innerHTML = cats.map(c => `<div class="cat-item" onclick="document.getElementById('global-category').value='${c}';applyFilters()">${c}</div>`).join('');
-      // render products
-      const grid = docume
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=400&q=80" alt="Hotel 1">
+          <div class="card-content">
+            <span class="label" style="background:#f5a623;">HOTEL</span>
+            <div class="card-title">Skyline Palace</div>
+            <div class="card-desc">Book a stay with our exclusive partner hotels.</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Hotel 2">
+          <div class="card-content">
+            <span class="label" style="background:#8ae63f;">OFFER</span>
+            <div class="card-title">Cityview Resort</div>
+            <div class="card-desc">Special offers on flights + hotel combos.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section>
+      <h2 class="section-title">MOST POPULAR AIRLINES</h2>
+      <div class="airlines-list">
+        <div class="airline-card">
+          <img src="https://cdn.pixabay.com/photo/2013/07/12/12/58/plane-146953_1280.png" alt="Shinan Airlines">
+          <div class="airline-name">Shinan Airlines</div>
+        </div>
+        <div class="airline-card">
+          <img src="https://cdn.pixabay.com/photo/2012/04/13/20/24/plane-33515_1280.png" alt="Emirates">
+          <div class="airline-name">Emirates</div>
+        </div>
+        <div class="airline-card">
+          <img src="https://cdn.pixabay.com/photo/2012/04/13/21/07/plane-33605_1280.png" alt="Qatar Airways">
+          <div class="airline-name">Qatar Airways</div>
+        </div>
+      </div>
+    </section>
+    
+    <section>
+      <h2 class="section-title">BOOK YOUR HOTEL</h2>
+      <div class="card-list">
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80" alt="Hotel 1">
+          <div class="card-content">
+            <span class="label" style="background:#f5a623;">NEW</span>
+            <div class="card-title">Nocity Inn Downtown</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1505761671935-60b3a7427bad?auto=format&fit=crop&w=400&q=80" alt="Hotel 2">
+          <div class="card-content">
+            <span class="label" style="background:#8ae63f;">HOTEL TROPICAL</span>
+            <div class="card-title">Hotel Tropical Daisy</div>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1445019980597-93fa8acb246c?auto=format&fit=crop&w=400&q=80" alt="Hotel 3">
+          <div class="card-content">
+            <span class="label" style="background:#e4287c;">DEAL</span>
+            <div class="card-title">Hotel Tropica Daisy</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
